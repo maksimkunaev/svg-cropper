@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        image {
+            height: 100%;
+            width: auto;
+            mask: url(#gradient-mask);
+
+        }
+
+        .cropper {
+            margin: 50px;
+        }
+
+        .result {
+            background-image: url("https://picsum.photos/500/500?image=1080");
+            width: 240px;
+            height: 240px;
+            border-radius: 300px;
+            background-position: 50% 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="cropper">
+        <svg width="400" height="400">
+            <defs>
+                <linearGradient id="gradient">
+                    <stop offset="0" stop-color="white" stop-opacity="0.55" />
+                </linearGradient>
+                <linearGradient id="gradient-opacity">
+                    <stop offset="0" stop-color="white" stop-opacity="1" />
+                </linearGradient>
+                <mask id="gradient-mask">
+                    <rect x="0" y="0" width="400" height="400" fill="url(#gradient)"  />
+                    <circle cx="50%" cy="50%" r="120" fill="url(#gradient-opacity)"/>
+                </mask>
+            </defs>
+            <image xlink:href='https://picsum.photos/500/500?image=1080'/>
+        </svg>
+    </div>
+
+    <div class="result">
+    </div>
+
+    <script>
+        const cropper = document.querySelector('.cropper');
+        const circle = document.querySelector('circle');
+        const result = document.querySelector('.result');
+        const cropperCoords = getCoords(cropper);
+
+        cropper.addEventListener('mousedown', onMouseDown);
+        cropper.addEventListener('mousemove', onMouseMove);
+        cropper.addEventListener('mouseup', onMouseUp);
+
+        let isMouseDown = false;
+        let circleCoords = {};
+
+        function onMouseDown() {
+            isMouseDown = true;
+        }
+        function onMouseUp() {
+            isMouseDown = false;
+            console.log('circleCoords',  );
+            setResultImage(circleCoords);
+        }
+        function setResultImage(circleCoords) {
+            const x = Math.round(circleCoords.x * 100/ 400);
+            const y = Math.round(circleCoords.y * 100 / 400);
+
+            result.style.backgroundPosition = `${x}% ${y}%`;
+        }
+
+        function onMouseMove(e) {
+            if (!isMouseDown) return;
+            circleCoords = {
+                x: e.clientX - cropperCoords.left,
+                y: e.clientY - cropperCoords.top,
+            };
+
+            circle.setAttribute('cx', circleCoords.x);
+            circle.setAttribute('cy', circleCoords.y);
+        }
+
+        function getCoords(elem) {
+            let box = elem.getBoundingClientRect();
+            return {
+                top: box.top + pageYOffset,
+                left: box.left + pageXOffset
+            };
+        }
+    </script>
+</body>
+</html>
