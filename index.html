@@ -8,8 +8,8 @@
     <title>Document</title>
     <style>
         image {
-            height: 100%;
-            width: auto;
+            height: auto;
+            width: 100%;
             mask: url(#gradient-mask);
 
         }
@@ -19,82 +19,83 @@
         }
 
         .result {
-            background-image: url("https://picsum.photos/500/500?image=1080");
+            background-image: url("https://assets.atlasobscura.com/media/W1siZiIsInVwbG9hZHMvYXNzZXRzLzdlOGQyMTVmM2Q4MmVkYWJlMF9zbWFsbC0xODM1OV8xMjgwLmpwZyJdLFsicCIsImNvbnZlcnQiLCIiXSxbInAiLCJjb252ZXJ0IiwiLXF1YWxpdHkgODEgLWF1dG8tb3JpZW50Il0sWyJwIiwidGh1bWIiLCIxMjgweD4iXV0/small-18359_1280.jpg");
             width: 240px;
             height: 240px;
             border-radius: 300px;
             background-position: 50% 50%;
         }
+
+        .form {
+            outline: 1px solid;
+            display: flex;
+            flex-direction: column;
+            width: 400px;
+            padding: 5px;
+        }
+
+        .src-image {
+            margin-bottom: 5px;
+            height: 20px;
+            border-radius: 2px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            margin-bottom: 5px;
+            height: 24px;
+            border-radius: 2px;
+            /* border: 1px solid #ccc; */
+            background: turquoise;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .range {
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            display: flex;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
-    <div class="cropper">
-        <svg width="400" height="400">
-            <defs>
-                <linearGradient id="gradient">
-                    <stop offset="0" stop-color="white" stop-opacity="0.55" />
-                </linearGradient>
-                <linearGradient id="gradient-opacity">
-                    <stop offset="0" stop-color="white" stop-opacity="1" />
-                </linearGradient>
-                <mask id="gradient-mask">
-                    <rect x="0" y="0" width="400" height="400" fill="url(#gradient)"  />
-                    <circle cx="50%" cy="50%" r="120" fill="url(#gradient-opacity)"/>
-                </mask>
-            </defs>
-            <image xlink:href='https://picsum.photos/500/500?image=1080'/>
-        </svg>
+    <form class="form">
+        <input type="text" class="src-image" placeholder="Paste image source">
+        <button type="submit">change photo</button>
+    </form>
+
+    <div class="content">
+        <div class="left">
+            <div class="cropper">
+                <svg width="500" height="500">
+                    <defs>
+                        <linearGradient id="gradient">
+                            <stop offset="0" stop-color="white" stop-opacity="0.55" />
+                        </linearGradient>
+                        <linearGradient id="gradient-opacity">
+                            <stop offset="0" stop-color="white" stop-opacity="1" />
+                        </linearGradient>
+                        <mask id="gradient-mask">
+                            <rect x="0" y="0" width="500" height="100%" fill="url(#gradient)" />
+                            <circle cx="50%" cy="50%" r="120" fill="url(#gradient-opacity)" />
+                        </mask>
+                    </defs>
+                    <image xlink:href='https://assets.atlasobscura.com/media/W1siZiIsInVwbG9hZHMvYXNzZXRzLzdlOGQyMTVmM2Q4MmVkYWJlMF9zbWFsbC0xODM1OV8xMjgwLmpwZyJdLFsicCIsImNvbnZlcnQiLCIiXSxbInAiLCJjb252ZXJ0IiwiLXF1YWxpdHkgODEgLWF1dG8tb3JpZW50Il0sWyJwIiwidGh1bWIiLCIxMjgweD4iXV0/small-18359_1280.jpg'/>
+                </svg>
+            </div>
+            <div class="range">
+                <input type="range" id="start" class="range-input" name="volume"
+                       min="0" max="10">
+                <label for="start"></label>
+            </div>
+        </div>
+        <div class="result"></div>
     </div>
 
-    <div class="result">
-    </div>
-
-    <script>
-        const cropper = document.querySelector('.cropper');
-        const circle = document.querySelector('circle');
-        const result = document.querySelector('.result');
-        const cropperCoords = getCoords(cropper);
-
-        cropper.addEventListener('mousedown', onMouseDown);
-        cropper.addEventListener('mousemove', onMouseMove);
-        cropper.addEventListener('mouseup', onMouseUp);
-
-        let isMouseDown = false;
-        let circleCoords = {};
-
-        function onMouseDown() {
-            isMouseDown = true;
-        }
-        function onMouseUp() {
-            isMouseDown = false;
-            console.log('circleCoords',  );
-            setResultImage(circleCoords);
-        }
-        function setResultImage(circleCoords) {
-            const x = Math.round(circleCoords.x * 100/ 400);
-            const y = Math.round(circleCoords.y * 100 / 400);
-
-            result.style.backgroundPosition = `${x}% ${y}%`;
-        }
-
-        function onMouseMove(e) {
-            if (!isMouseDown) return;
-            circleCoords = {
-                x: e.clientX - cropperCoords.left,
-                y: e.clientY - cropperCoords.top,
-            };
-
-            circle.setAttribute('cx', circleCoords.x);
-            circle.setAttribute('cy', circleCoords.y);
-        }
-
-        function getCoords(elem) {
-            let box = elem.getBoundingClientRect();
-            return {
-                top: box.top + pageYOffset,
-                left: box.left + pageXOffset
-            };
-        }
-    </script>
+    <script src="cropper.js"></script>
 </body>
 </html>
